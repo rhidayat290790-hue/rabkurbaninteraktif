@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e-RAB Kurban 1447H / 2026M - SDIT Insan Cendekia</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SheetJS (xlsx) for Export/Import -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-layout {
+                display: block !important;
+                background: white !important;
+                color: black !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            input, select {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                appearance: none !important;
+                -moz-appearance: none !important;
+                -webkit-appearance: none !important;
+                pointer-events: none !important;
+            }
+            /* Hide placeholders on print */
+            input::placeholder {
+                color: transparent;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header & Navigation (Hidden on Print) -->
+    <header class="bg-emerald-800 text-white shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-600 p-2.5 rounded-lg text-emerald-100 text-2xl">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">e-RAB KURBAN</h1>
+                    <p class="text-xs text-emerald-200 font-medium">SDIT Insan Cendekia • Bukit Kemuning, Lampung Utara</p>
+                </div>
+            </div>
+            
+            <!-- Quick Action Buttons -->
+            <div class="flex flex-wrap gap-2 justify-center">
+                <button onclick="saveData()" class="bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition duration-200 shadow-sm border border-emerald-600">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan
+                </button>
+                <button onclick="exportToXLS()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition duration-200 shadow-sm">
+                    <i class="fa-solid fa-file-excel"></i> Ekspor XLS
+                </button>
+                <label for="import-file" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition duration-200 shadow-sm cursor-pointer">
+                    <i class="fa-solid fa-file-import"></i> Impor XLS
+                    <input type="file" id="import-file" accept=".xls,.xlsx" class="hidden" onchange="importFromXLS(event)">
+                </label>
+                <button onclick="confirmReset()" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition duration-200 shadow-sm">
+                    <i class="fa-solid fa-rotate"></i> Reset
+                </button>
+                <button onclick="window.print()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition duration-200 shadow-sm">
+                    <i class="fa-solid fa-print"></i> Cetak RAB
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8 print-layout">
+        
+        <!-- KOP SURAT / DOKUMEN IDENTITAS (Visible on Print and Screen) -->
+        <div class="text-center border-b-2 border-slate-300 pb-6 mb-8">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-wide uppercase">Rancangan Anggaran Belanja (RAB) Kurban</h2>
+            <p class="text-lg sm:text-xl font-semibold text-emerald-800 mt-1">SDIT INSAN CENDEKIA</p>
+            <div class="flex justify-center gap-4 text-sm text-slate-600 mt-2 font-medium">
+                <span>Tahun Hijriah: <strong class="text-slate-800">1447 H</strong></span>
+                <span>•</span>
+                <span>Tahun Masehi: <strong class="text-slate-800">2026 M</strong></span>
+                <span>•</span>
+                <span>Lokasi: <strong class="text-slate-800">Bukit Kemuning, Lampung Utara</strong></span>
+            </div>
+        </div>
+
+        <!-- Petunjuk Pengisian (Hidden on Print) -->
+        <div id="instructions" class="bg-emerald-50 border-l-4 border-emerald-600 p-4 rounded-r-xl mb-8 no-print shadow-sm">
+            <div class="flex justify-between items-start">
+                <div class="flex gap-3">
+                    <span class="text-emerald-700 text-lg mt-0.5"><i class="fa-solid fa-circle-info"></i></span>
+                    <div>
+                        <h3 class="text-sm font-bold text-emerald-900 uppercase tracking-wider">Petunjuk Pengisian e-RAB Kurban:</h3>
+                        <ul class="list-disc list-inside text-xs text-emerald-800 mt-1.5 space-y-1">
+                            <li>Isi uraian deskripsi, volume, dan harga satuan pada tabel yang disediakan.</li>
+                            <li>Aplikasi akan menghitung <strong>Sub Total</strong> dan <strong>Total Dana</strong> secara otomatis.</li>
+                            <li>Gunakan tombol <span class="bg-emerald-600 text-white px-1.5 py-0.5 rounded text-[10px] font-bold"><i class="fa-solid fa-plus text-[8px]"></i> Tambah Rincian</span> untuk menambah baris baru.</li>
+                            <li>Gunakan ikon sampah merah (<i class="fa-solid fa-trash text-rose-500"></i>) di ujung kanan tabel untuk menghapus rincian.</li>
+                            <li>Pindah antar lembar pengisian melalui tab <strong>Lembar 1: Pemasukan</strong> dan <strong>Lembar 2: Pengeluaran</strong>.</li>
+                            <li>Gunakan tombol di pojok kanan atas untuk menyimpan progress ke komputer Anda, ekspor/impor file excel, atau langsung mencetaknya.</li>
+                        </ul>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('instructions').remove()" class="text-emerald-600 hover:text-emerald-800 text-sm font-semibold">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD RINGKASAN SALDO (A, B, Surplus) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+            <!-- Pemasukan Box -->
+            <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-5 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Total Penerimaan (A)</p>
+                    <h3 id="dash-pemasukan" class="text-2xl font-extrabold text-emerald-900 mt-1">Rp 0</h3>
+                </div>
+                <div class="bg-emerald-600 text-white p-3 rounded-lg text-xl no-print">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+            </div>
+            <!-- Pengeluaran Box -->
+            <div class="bg-gradient-to-br from-rose-50 to-rose-100 border border-rose-200 rounded-xl p-5 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-rose-800 uppercase tracking-wider">Total Pengeluaran (B)</p>
+                    <h3 id="dash-pengeluaran" class="text-2xl font-extrabold text-rose-900 mt-1">Rp 0</h3>
+                </div>
+                <div class="bg-rose-600 text-white p-3 rounded-lg text-xl no-print">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+            </div>
+            <!-- Surplus Box -->
+            <div id="dash-surplus-container" class="bg-gradient-to-br from-cyan-50 to-cyan-100 border border-cyan-200 rounded-xl p-5 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-cyan-800 uppercase tracking-wider">Sisa Pemasukan / Surplus (A - B)</p>
+                    <h3 id="dash-surplus" class="text-2xl font-extrabold text-cyan-900 mt-1">Rp 0</h3>
+                </div>
+                <div id="dash-surplus-icon" class="bg-cyan-600 text-white p-3 rounded-lg text-xl no-print">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGASI TAB (Hidden on Print) -->
+        <div class="border-b border-slate-200 mb-6 no-print">
+            <nav class="flex space-x-4" aria-label="Tabs">
+                <button onclick="switchTab('pemasukan')" id="tab-pemasukan" class="border-b-2 border-emerald-600 text-emerald-700 px-4 py-2.5 font-bold text-sm flex items-center gap-2 transition duration-150">
+                    <i class="fa-solid fa-circle-arrow-down"></i> Lembar 1: Penerimaan Dana
+                </button>
+                <button onclick="switchTab('pengeluaran')" id="tab-pengeluaran" class="border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-4 py-2.5 font-bold text-sm flex items-center gap-2 transition duration-150">
+                    <i class="fa-solid fa-circle-arrow-up"></i> Lembar 2: Pengeluaran Dana
+                </button>
+            </nav>
+        </div>
+
+        <!-- DOKUMEN EDITABLE AREA -->
+        <div id="document-area">
+            
+            <!-- SECTION PEMASUKAN -->
+            <section id="section-pemasukan" class="mb-10 block">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-l-4 border-emerald-600 pl-3">
+                        Penerimaan/Pemasukan Dana (A)
+                    </h3>
+                    <button onclick="addRow('pemasukan')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition duration-150 shadow-sm no-print">
+                        <i class="fa-solid fa-plus text-[10px]"></i> Tambah Rincian
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <table class="min-w-full divide-y divide-slate-200 text-left">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-16 text-center">No</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Uraian Deskripsi Sumber Dana</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-24 text-center">Volume</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-28 text-center">Satuan</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-40 text-right">Harga Satuan (Rp)</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-44 text-right">Sub Total (Rp)</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-12 text-center no-print">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-pemasukan-body" class="divide-y divide-slate-200 bg-white">
+                            <!-- Rows will be injected by JavaScript -->
+                        </tbody>
+                        <tfoot class="bg-slate-50 font-bold text-slate-950 border-t-2 border-slate-300">
+                            <tr>
+                                <td colspan="5" class="py-4 px-4 text-right text-sm">TOTAL PENERIMAAN (A) :</td>
+                                <td id="total-pemasukan" class="py-4 px-4 text-right text-sm text-emerald-800">Rp 0</td>
+                                <td class="py-4 px-4 no-print"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION PENGELUARAN -->
+            <section id="section-pengeluaran" class="mb-10 hidden md:block print:block page-break">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2 border-l-4 border-rose-600 pl-3">
+                        Pengeluaran Dana (B)
+                    </h3>
+                    <button onclick="addRow('pengeluaran')" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition duration-150 shadow-sm no-print">
+                        <i class="fa-solid fa-plus text-[10px]"></i> Tambah Rincian
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <table class="min-w-full divide-y divide-slate-200 text-left">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-16 text-center">No</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Divisi / Deskripsi Belanja</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-48">Kategori Divisi</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-20 text-center">Vol</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-24 text-center">Satuan</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-36 text-right">Harga Satuan (Rp)</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-40 text-right">Sub Total (Rp)</th>
+                                <th scope="col" class="py-3 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-12 text-center no-print">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-pengeluaran-body" class="divide-y divide-slate-200 bg-white">
+                            <!-- Rows will be injected by JavaScript -->
+                        </tbody>
+                        <tfoot class="bg-slate-50 font-bold text-slate-950 border-t-2 border-slate-300">
+                            <tr>
+                                <td colspan="6" class="py-4 px-4 text-right text-sm">TOTAL PENGELUARAN (B) :</td>
+                                <td id="total-pengeluaran" class="py-4 px-4 text-right text-sm text-rose-800">Rp 0</td>
+                                <td class="py-4 px-4 no-print"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TANDA TANGAN (Sertakan space untuk Bendahara, Ketua Panitia, Pembina) -->
+            <section class="mt-12 page-break">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center text-sm text-slate-800 font-medium">
+                    <!-- Menyetujui Pembina -->
+                    <div class="flex flex-col justify-between h-36">
+                        <div>
+                            <p class="font-bold">Menyetujui,</p>
+                            <p class="text-slate-600">Pembina</p>
+                        </div>
+                        <div>
+                            <p class="font-bold underline text-slate-900">Mu'alim, S.Sos</p>
+                            <p class="text-xs text-slate-500 mt-1">Pembina Yayasan</p>
+                        </div>
+                    </div>
+
+                    <!-- Mengetahui Ketua Panitia -->
+                    <div class="flex flex-col justify-between h-36">
+                        <div>
+                            <p class="font-bold">Mengetahui,</p>
+                            <p class="text-slate-600">Ketua Panitia Kurban</p>
+                        </div>
+                        <div>
+                            <p class="font-bold underline text-slate-900">Rahmat Hidayat, S.Pd.I</p>
+                            <p class="text-xs text-slate-500 mt-1">Ketua Panitia</p>
+                        </div>
+                    </div>
+
+                    <!-- Bendahara -->
+                    <div class="flex flex-col justify-between h-36">
+                        <div>
+                            <p class="font-bold">Bukit Kemuning, .................... 2026</p>
+                            <p class="text-slate-600">Bendahara</p>
+                        </div>
+                        <div>
+                            <p class="font-bold underline text-slate-900">Chandra Kuriawan, S.Pd</p>
+                            <p class="text-xs text-slate-500 mt-1">Bendahara Panitia</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- NOTIFIKASI TOAST (Sederhana, pengganti Alert) -->
+        <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white text-sm py-2 px-4 rounded-lg shadow-lg opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2">
+            <span id="toast-icon"></span>
+            <span id="toast-message"></span>
+        </div>
+
+    </main>
+
+    <!-- FOOTER HAK CIPTA -->
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
+            <p class="font-semibold text-slate-300">Hak Cipta Dilindungi Panitia Kurban 2026</p>
+            <p class="text-slate-500">SDIT Insan Cendekia • Bukit Kemuning, Lampung Utara • Tahun 1447 H / 2026 M</p>
+        </div>
+    </footer>
+
+    <!-- LOGIKA JAVASCRIPT APLIKASI -->
+    <script>
+        // Data Default Template untuk inisialisasi pertama kali
+        const defaultPemasukan = [
+            { uraian: "Iuran Hewan Sapi Kelompok A", volume: 1, satuan: "Paket", harga: 21000000 },
+            { uraian: "Iuran Hewan Sapi Kelompok B", volume: 1, satuan: "Paket", harga: 21000000 },
+            { uraian: "Iuran Hewan Kambing Individu (Pak Ahmad)", volume: 1, satuan: "Ekor", harga: 3200000 },
+            { uraian: "Infaq Operasional / Kas Sekolah", volume: 1, satuan: "Paket", harga: 1500000 }
+        ];
+
+        const defaultPengeluaran = [
+            { uraian: "Pembelian Hewan Sapi Kelompok A", kategori: "hewan kurban", volume: 1, satuan: "Ekor", harga: 19500000 },
+            { uraian: "Pembelian Hewan Sapi Kelompok B", kategori: "hewan kurban", volume: 1, satuan: "Ekor", harga: 19500000 },
+            { uraian: "Pembelian Hewan Kambing", kategori: "hewan kurban", volume: 1, satuan: "Ekor", harga: 3000000 },
+            { uraian: "Sewa Terop dan Panggung Utama", kategori: "perlengkapan", volume: 1, satuan: "Set", harga: 800000 },
+            { uraian: "Konsumsi Panitia dan Warga (Hari H)", kategori: "konsumsi", volume: 50, satuan: "Kotak", harga: 15000 },
+            { uraian: "Cetak Banner & Dokumentasi Kegiatan", kategori: "humas dan dokumentasi", volume: 1, satuan: "Paket", harga: 350000 }
+        ];
+
+        // State global aplikasi
+        let dataPemasukan = [];
+        let dataPengeluaran = [];
+        let activeTab = 'pemasukan';
+
+        // Inisialisasi Aplikasi Saat Memuat Halaman
+        window.addEventListener('load', () => {
+            // Coba ambil dari localStorage, jika tidak ada pakai default template
+            const localPemasukan = localStorage.getItem('rab_pemasukan');
+            const localPengeluaran = localStorage.getItem('rab_pengeluaran');
+
+            if (localPemasukan) {
+                dataPemasukan = JSON.parse(localPemasukan);
+            } else {
+                dataPemasukan = [...defaultPemasukan];
+            }
+
+            if (localPengeluaran) {
+                dataPengeluaran = JSON.parse(localPengeluaran);
+            } else {
+                dataPengeluaran = [...defaultPengeluaran];
+            }
+
+            renderTables();
+            updateCalculations();
+            
+            // Set default view tab
+            switchTab('pemasukan');
+        });
+
+        // Alih Halaman / Tab (Hanya berlaku di layar monitor, saat print semua akan tercetak)
+        function switchTab(tab) {
+            activeTab = tab;
+            const tabPem = document.getElementById('tab-pemasukan');
+            const tabPeng = document.getElementById('tab-pengeluaran');
+            const secPem = document.getElementById('section-pemasukan');
+            const secPeng = document.getElementById('section-pengeluaran');
+
+            if (tab === 'pemasukan') {
+                tabPem.className = "border-b-2 border-emerald-600 text-emerald-700 px-4 py-2.5 font-bold text-sm flex items-center gap-2 transition duration-150";
+                tabPeng.className = "border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-4 py-2.5 font-bold text-sm flex items-center gap-2 transition duration-150";
+                secPem.style.display = "block";
+                secPeng.classList.add('hidden');
+                secPeng.classList.remove('md:block');
+            } else {
+                tabPeng.className = "border-b-2 border-rose-600 text-rose-700 px-4 py-2.5 font-bold text-sm flex items-center gap-2 transition duration-150";
+                tabPem.className = "border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-4 py-2.5 font-bold text-sm flex items-center gap-2 transition duration-150";
+                secPeng.classList.remove('hidden');
+                secPeng.classList.add('md:block');
+                secPem.style.display = "none";
+            }
+        }
+
+        // Render Data ke Dalam Tabel HTML
+        function renderTables() {
+            // Render Pemasukan
+            const pemBody = document.getElementById('table-pemasukan-body');
+            pemBody.innerHTML = '';
+            
+            dataPemasukan.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition duration-150";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-sm text-center font-medium text-slate-500">${index + 1}</td>
+                    <td class="py-3 px-4 text-sm font-semibold">
+                        <input type="text" value="${item.uraian}" oninput="updateItem('pemasukan', ${index}, 'uraian', this.value)" placeholder="Nama Sumber Dana..." class="w-full bg-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded px-2 py-1 text-slate-800 font-semibold border border-transparent hover:border-slate-200">
+                    </td>
+                    <td class="py-3 px-4 text-sm text-center">
+                        <input type="number" value="${item.volume}" oninput="updateItem('pemasukan', ${index}, 'volume', this.value)" class="w-full text-center bg-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded px-2 py-1 border border-transparent hover:border-slate-200">
+                    </td>
+                    <td class="py-3 px-4 text-sm text-center">
+                        <input type="text" value="${item.satuan}" oninput="updateItem('pemasukan', ${index}, 'satuan', this.value)" placeholder="Ekor/Paket..." class="w-full text-center bg-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded px-2 py-1 border border-transparent hover:border-slate-200">
+                    </td>
+                    <td class="py-3 px-4 text-sm text-right">
+                        <input type="number" value="${item.harga}" oninput="updateItem('pemasukan', ${index}, 'harga', this.value)" class="w-full text-right bg-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded px-2 py-1 font-mono border border-transparent hover:border-slate-200">
+                    </td>
+                    <td class="py-3 px-4 text-sm text-right font-semibold font-mono text-slate-700">
+                        ${formatRupiah(item.volume * item.harga)}
+                    </td>
+                    <td class="py-3 px-4 text-center no-print">
+                        <button onclick="deleteRow('pemasukan', ${index})" class="text-rose-600 hover:text-rose-800 p-1 rounded-full hover:bg-rose-50 transition duration-150" title="Hapus Baris">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                pemBody.appendChild(tr);
+            });
+
+            // Render Pengeluaran
+            const pengBody = document.getElementById('table-pengeluaran-body');
+            pengBody.innerHTML = '';
+            
+            dataPengeluaran.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 transition duration-150";
+                
+                // Kategori select options
+                const categories = [
+                    { val: 'hewan kurban', label: 'Hewan Kurban' },
+                    { val: 'operasional', label: 'Operasional' },
+                    { val: 'perlengkapan', label: 'Perlengkapan' },
+                    { val: 'konsumsi', label: 'Konsumsi' },
+                    { val: 'humas dan dokumentasi', label: 'Humas & Dokumentasi' },
+                    { val: 'kas/lainnya', label: 'Kas/Lainnya' }
+                ];
+
+                let selectOptions = '';
+                categories.forEach(cat => {
+                    selectOptions += `<option value="${cat.val}" ${item.kategori === cat.val ? 'selected' : ''}>${cat.label}</option>`;
+                });
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-sm text-center font-medium text-slate-500">${index + 1}</td>
+                    <td class="py-3 px-4 text-sm font-semibold">
+                        <input type="text" value="${item.uraian}" oninput="updateItem('pengeluaran', ${index}, 'uraian', this.value)" placeholder="Nama Barang/Jasa..." class="w-full bg-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 rounded px-2 py-1 text-slate-800 font-semibold border border-transparent hover:border-slate-200">
+                    </td>
+                    <td class="py-3 px-4 text-sm">
+                        <select onchange="updateItem('pengeluaran', ${index}, 'kategori', this.value)" class="w-full bg-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 rounded px-2 py-1 text-xs font-semibold uppercase text-slate-600 border border-transparent hover:border-slate-200">
+                            ${selectOptions}
+                        </select>
+                    </td>
+                    <td class="py-3 px-4 text-sm text-center">
+                        <input type="number" value="${item.volume}" oninput="updateItem('pengeluaran', ${index}, 'volume', this.value)" class="w-full text-center bg-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 rounded px-2 py-1 border border-transparent hover:border-slate-200">
+                    </td>
+                    <td class="py-3 px-4 text-sm text-center">
+                        <input type="text" value="${item.satuan}" oninput="updateItem('pengeluaran', ${index}, 'satuan', this.value)" placeholder="Set/Kotak..." class="w-full text-center bg-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 rounded px-2 py-1 border border-transparent hover:border-slate-200">
+                    </td>
+                    <td class="py-3 px-4 text-sm text-right">
+                        <input type="number" value="${item.harga}" oninput="updateItem('pengeluaran', ${index}, 'harga', this.value)" class="w-full text-right bg-transparent focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 rounded px-2 py-1 font-mono border border-transparent hover:border-slate-200">
+                    </td>
+                    <td class="py-3 px-4 text-sm text-right font-semibold font-mono text-slate-700">
+                        ${formatRupiah(item.volume * item.harga)}
+                    </td>
+                    <td class="py-3 px-4 text-center no-print">
+                        <button onclick="deleteRow('pengeluaran', ${index})" class="text-rose-600 hover:text-rose-800 p-1 rounded-full hover:bg-rose-50 transition duration-150" title="Hapus Baris">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                pengBody.appendChild(tr);
+            });
+        }
+
+        // Update Item di Memory State
+        function updateItem(type, index, field, value) {
+            if (type === 'pemasukan') {
+                if (field === 'volume' || field === 'harga') {
+                    dataPemasukan[index][field] = parseFloat(value) || 0;
+                } else {
+                    dataPemasukan[index][field] = value;
+                }
+            } else {
+                if (field === 'volume' || field === 'harga') {
+                    dataPengeluaran[index][field] = parseFloat(value) || 0;
+                } else {
+                    dataPengeluaran[index][field] = value;
+                }
+            }
+            
+            // Render sub-total baris ini tanpa re-render semua agar performa input lancar
+            updateCalculations();
+        }
+
+        // Tambah Baris Kosong Baru
+        function addRow(type) {
+            if (type === 'pemasukan') {
+                dataPemasukan.push({ uraian: '', volume: 1, satuan: 'Pcs', harga: 0 });
+            } else {
+                dataPengeluaran.push({ uraian: '', kategori: 'operasional', volume: 1, satuan: 'Pcs', harga: 0 });
+            }
+            renderTables();
+            updateCalculations();
+            showToast("Baris rincian baru berhasil ditambahkan!");
+        }
+
+        // Hapus Baris Rincian
+        function deleteRow(type, index) {
+            if (type === 'pemasukan') {
+                dataPemasukan.splice(index, 1);
+            } else {
+                dataPengeluaran.splice(index, 1);
+            }
+            renderTables();
+            updateCalculations();
+            showToast("Baris rincian berhasil dihapus.", "warning");
+        }
+
+        // Hitung Ulang Total Pemasukan, Pengeluaran, & Surplus
+        function updateCalculations() {
+            let totalA = 0;
+            let totalB = 0;
+
+            // Kalkulasi Pemasukan
+            dataPemasukan.forEach(item => {
+                totalA += (item.volume * item.harga);
+            });
+
+            // Kalkulasi Pengeluaran
+            dataPengeluaran.forEach(item => {
+                totalB += (item.volume * item.harga);
+            });
+
+            const surplus = totalA - totalB;
+
+            // Render ke tabel footer
+            document.getElementById('total-pemasukan').innerText = formatRupiah(totalA);
+            document.getElementById('total-pengeluaran').innerText = formatRupiah(totalB);
+
+            // Render ke Dashboard Atas
+            document.getElementById('dash-pemasukan').innerText = formatRupiah(totalA);
+            document.getElementById('dash-pengeluaran').innerText = formatRupiah(totalB);
+            document.getElementById('dash-surplus').innerText = formatRupiah(surplus);
+
+            // Perbarui warna status surplus (Jika minus berwarna merah, jika surplus berwarna biru/hijau)
+            const surplusContainer = document.getElementById('dash-surplus-container');
+            const surplusIcon = document.getElementById('dash-surplus-icon');
+            
+            if (surplus < 0) {
+                surplusContainer.className = "bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-xl p-5 shadow-sm flex items-center justify-between";
+                surplusIcon.className = "bg-red-600 text-white p-3 rounded-lg text-xl no-print";
+            } else {
+                surplusContainer.className = "bg-gradient-to-br from-cyan-50 to-cyan-100 border border-cyan-200 rounded-xl p-5 shadow-sm flex items-center justify-between";
+                surplusIcon.className = "bg-cyan-600 text-white p-3 rounded-lg text-xl no-print";
+            }
+
+            // Update sub-total visual secara instan pada input terfokus
+            const pemRows = document.querySelectorAll('#table-pemasukan-body tr');
+            dataPemasukan.forEach((item, index) => {
+                if(pemRows[index]) {
+                    pemRows[index].cells[5].innerText = formatRupiah(item.volume * item.harga);
+                }
+            });
+
+            const pengRows = document.querySelectorAll('#table-pengeluaran-body tr');
+            dataPengeluaran.forEach((item, index) => {
+                if(pengRows[index]) {
+                    pengRows[index].cells[6].innerText = formatRupiah(item.volume * item.harga);
+                }
+            });
+        }
+
+        // Formatter Mata Uang Rupiah
+        function formatRupiah(angka) {
+            return "Rp " + new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(angka);
+        }
+
+        // Simpan Data Saat Ini ke Local Storage
+        function saveData() {
+            localStorage.setItem('rab_pemasukan', JSON.stringify(dataPemasukan));
+            localStorage.setItem('rab_pengeluaran', JSON.stringify(dataPengeluaran));
+            showToast("Semua data berhasil disimpan ke penyimpanan lokal browser Anda!", "success");
+        }
+
+        // Reset Semua Data ke Kosong / Template Default
+        function confirmReset() {
+            if (confirm("Apakah Anda yakin ingin menyetel ulang (reset) data? Tindakan ini akan mengosongkan perubahan Anda.")) {
+                localStorage.removeItem('rab_pemasukan');
+                localStorage.removeItem('rab_pengeluaran');
+                dataPemasukan = [...defaultPemasukan];
+                dataPengeluaran = [...defaultPengeluaran];
+                renderTables();
+                updateCalculations();
+                showToast("Data e-RAB telah di-reset ke template awal.", "warning");
+            }
+        }
+
+        // Ekspor ke Spreadsheet Format XLS (XLSX format)
+        function exportToXLS() {
+            try {
+                // Buat workbook baru
+                const wb = XLSX.utils.book_new();
+
+                // Format data pemasukan untuk excel
+                const extPemasukan = dataPemasukan.map((item, index) => ({
+                    "No": index + 1,
+                    "Uraian Deskripsi Sumber Dana": item.uraian,
+                    "Volume": item.volume,
+                    "Satuan": item.satuan,
+                    "Harga Satuan (Rp)": item.harga,
+                    "Sub Total (Rp)": item.volume * item.harga
+                }));
+                const wsPem = XLSX.utils.json_to_sheet(extPemasukan);
+                XLSX.utils.book_append_sheet(wb, wsPem, "Pemasukan");
+
+                // Format data pengeluaran untuk excel
+                const extPengeluaran = dataPengeluaran.map((item, index) => ({
+                    "No": index + 1,
+                    "Divisi / Deskripsi Belanja": item.uraian,
+                    "Kategori Divisi": item.kategori.toUpperCase(),
+                    "Volume": item.volume,
+                    "Satuan": item.satuan,
+                    "Harga Satuan (Rp)": item.harga,
+                    "Sub Total (Rp)": item.volume * item.harga
+                }));
+                const wsPeng = XLSX.utils.json_to_sheet(extPengeluaran);
+                XLSX.utils.book_append_sheet(wb, wsPeng, "Pengeluaran");
+
+                // Generate File download
+                XLSX.writeFile(wb, "RAB_Kurban_2026_SDIT_Insan_Cendekia.xlsx");
+                showToast("File e-RAB Excel (.xlsx) berhasil di-ekspor!", "success");
+            } catch (err) {
+                showToast("Gagal melakukan ekspor data.", "error");
+                console.error(err);
+            }
+        }
+
+        // Impor dari file Excel (.xls / .xlsx)
+        function importFromXLS(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // Baca sheet pertama (Pemasukan)
+                    if (workbook.SheetNames.includes("Pemasukan")) {
+                        const wsPem = workbook.Sheets["Pemasukan"];
+                        const jsonPem = XLSX.utils.sheet_to_json(wsPem);
+                        dataPemasukan = jsonPem.map(row => ({
+                            uraian: row["Uraian Deskripsi Sumber Dana"] || "",
+                            volume: parseFloat(row["Volume"]) || 1,
+                            satuan: row["Satuan"] || "Pcs",
+                            harga: parseFloat(row["Harga Satuan (Rp)"]) || 0
+                        }));
+                    }
+
+                    // Baca sheet kedua (Pengeluaran)
+                    if (workbook.SheetNames.includes("Pengeluaran")) {
+                        const wsPeng = workbook.Sheets["Pengeluaran"];
+                        const jsonPeng = XLSX.utils.sheet_to_json(wsPeng);
+                        dataPengeluaran = jsonPeng.map(row => ({
+                            uraian: row["Divisi / Deskripsi Belanja"] || "",
+                            kategori: (row["Kategori Divisi"] || "operasional").toLowerCase(),
+                            volume: parseFloat(row["Volume"]) || 1,
+                            satuan: row["Satuan"] || "Pcs",
+                            harga: parseFloat(row["Harga Satuan (Rp)"]) || 0
+                        }));
+                    }
+
+                    renderTables();
+                    updateCalculations();
+                    saveData();
+                    showToast("Data dari Excel berhasil di-impor!", "success");
+                } catch (err) {
+                    showToast("Format Excel tidak sesuai. Gagal impor data.", "error");
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            // Reset input file value agar bisa mengimpor file yang sama lagi jika perlu
+            event.target.value = '';
+        }
+
+        // Tampilkan Toast Notifikasi Kecil
+        function showToast(message, status = "success") {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const msg = document.getElementById('toast-message');
+
+            msg.innerText = message;
+            
+            // Set icon and background based on status
+            if (status === "success") {
+                toast.className = "fixed bottom-5 right-5 bg-emerald-900 text-white text-sm py-2 px-4 rounded-lg shadow-lg opacity-100 z-50 flex items-center gap-2 transition-all duration-300";
+                icon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+            } else if (status === "warning") {
+                toast.className = "fixed bottom-5 right-5 bg-amber-950 text-white text-sm py-2 px-4 rounded-lg shadow-lg opacity-100 z-50 flex items-center gap-2 transition-all duration-300";
+                icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-400"></i>';
+            } else {
+                toast.className = "fixed bottom-5 right-5 bg-rose-950 text-white text-sm py-2 px-4 rounded-lg shadow-lg opacity-100 z-50 flex items-center gap-2 transition-all duration-300";
+                icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-400"></i>';
+            }
+
+            // Hilangkan toast setelah 3.5 detik
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                toast.classList.add('pointer-events-none');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
